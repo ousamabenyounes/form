@@ -63,6 +63,9 @@ import type {
 } from './util-types'
 import type { Updater } from './utils'
 
+/**
+ * Returns array field values as arrays so optional or nullable array helpers can operate safely.
+ */
 function getArrayFieldValue<TValue>(
   value: TValue,
 ): Array<ArrayElement<TValue>> {
