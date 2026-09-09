@@ -63,6 +63,12 @@ import type {
 } from './util-types'
 import type { Updater } from './utils'
 
+function getArrayFieldValue<TValue>(
+  value: TValue,
+): Array<ArrayElement<TValue>> {
+  return Array.isArray(value) ? value : []
+}
+
 /**
  * @private
  */
@@ -2721,7 +2727,7 @@ export class FormApi<
   ) => {
     this.setFieldValue(
       field,
-      (prev) => [...(Array.isArray(prev) ? prev : []), value] as any,
+      (prev) => [...getArrayFieldValue(prev), value] as any,
       options,
     )
 
@@ -2737,10 +2743,11 @@ export class FormApi<
     this.setFieldValue(
       field,
       (prev) => {
+        const previousValue = getArrayFieldValue(prev)
         return [
-          ...(prev as DeepValue<TFormData, TField>[]).slice(0, index),
+          ...previousValue.slice(0, index),
           value,
-          ...(prev as DeepValue<TFormData, TField>[]).slice(index),
+          ...previousValue.slice(index),
         ] as any
       },
       mergeOpts(options, { dontValidate: true }),
@@ -2772,7 +2779,7 @@ export class FormApi<
     this.setFieldValue(
       field,
       (prev) => {
-        return (prev as DeepValue<TFormData, TField>[]).map((d, i) =>
+        return getArrayFieldValue(prev).map((d, i) =>
           i === index ? value : d,
         ) as any
       },
@@ -2806,9 +2813,7 @@ export class FormApi<
     this.setFieldValue(
       field,
       (prev) => {
-        return (prev as DeepValue<TFormData, TField>[]).filter(
-          (_d, i) => i !== index,
-        ) as any
+        return getArrayFieldValue(prev).filter((_d, i) => i !== index) as any
       },
       mergeOpts(options, { dontValidate: true }),
     )
@@ -2841,9 +2846,16 @@ export class FormApi<
     this.setFieldValue(
       field,
       (prev: any) => {
-        const prev1 = prev[index1]!
-        const prev2 = prev[index2]!
-        return setBy(setBy(prev, `${index1}`, prev2), `${index2}`, prev1)
+        const previousValue = getArrayFieldValue(prev)
+        if (!previousValue.length) return previousValue as any
+
+        const prev1 = previousValue[index1]!
+        const prev2 = previousValue[index2]!
+        return setBy(
+          setBy(previousValue, `${index1}`, prev2),
+          `${index2}`,
+          prev1,
+        )
       },
       mergeOpts(options, { dontValidate: true }),
     )
@@ -2873,7 +2885,10 @@ export class FormApi<
     this.setFieldValue(
       field,
       (prev: any) => {
-        const next: any = [...prev]
+        const previousValue = getArrayFieldValue(prev)
+        if (!previousValue.length) return previousValue as any
+
+        const next: any = [...previousValue]
         next.splice(index2, 0, next.splice(index1, 1)[0])
         return next
       },

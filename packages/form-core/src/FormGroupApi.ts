@@ -49,6 +49,7 @@ import type {
 import type { AsyncValidator, SyncValidator, Updater } from './utils'
 import type { ReadonlyStore } from '@tanstack/store'
 import type {
+  ArrayElement,
   DeepKeys,
   DeepKeysOfArray,
   DeepKeysOfType,
@@ -2239,7 +2240,7 @@ export class FormGroupApi<
 
   pushFieldValue = <TField extends DeepKeysOfArray<TParentData>>(
     field: TField,
-    value: any,
+    value: ArrayElement<DeepValue<TParentData, TField>>,
   ) => {
     return this.form.pushFieldValue(field as never, value)
   }
@@ -2247,7 +2248,7 @@ export class FormGroupApi<
   insertFieldValue = <TField extends DeepKeysOfArray<TParentData>>(
     field: TField,
     index: number,
-    value: any,
+    value: ArrayElement<DeepValue<TParentData, TField>>,
   ) => {
     return this.form.insertFieldValue(field as never, index, value)
   }
@@ -2255,7 +2256,7 @@ export class FormGroupApi<
   replaceFieldValue = <TField extends DeepKeysOfArray<TParentData>>(
     field: TField,
     index: number,
-    value: any,
+    value: ArrayElement<DeepValue<TParentData, TField>>,
   ) => {
     return this.form.replaceFieldValue(field as never, index, value)
   }
